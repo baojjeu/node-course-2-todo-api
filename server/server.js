@@ -15,6 +15,7 @@ var app = express();
 // middleware of express
 app.use(bodyParser.json());
 
+// Create
 app.post('/todos', (req, res) => {
   var todo = new Todo({
     text: req.body.text,
@@ -27,6 +28,16 @@ app.post('/todos', (req, res) => {
     res.status(400).send(err);
   });
 });
+
+// Read
+app.get('/todos', (req, res) => {
+  Todo.find().then((todos) => {
+    // { todos: todos }
+    res.send({ todos });
+  }, (err) => {
+    res.status(400).send(e);
+  })
+})
 
 app.listen(3000, () => {
   console.log('Started on port 3000');
