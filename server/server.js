@@ -29,7 +29,7 @@ app.post('/todos', (req, res) => {
   });
 });
 
-// Read
+// GET /todos
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
     // { todos: todos }
