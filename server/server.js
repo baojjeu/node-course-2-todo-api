@@ -1,6 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var { ObjectId } = require('mongodb');
+var { ObjectID } = require('mongodb');
 
 // fetch ./db/mongoose.js's local variable by destructing
 var { mongoose } = require('./db/mongoose');
@@ -45,7 +45,7 @@ app.get('/todos/:id', (req, res) => {
   // console.log(req.params);
   var id = req.params.id;
 
-  if (!ObjectId.isValid(id)) {
+  if (!ObjectID.isValid(id)) {
     return res.status(400).send();
   }
 
