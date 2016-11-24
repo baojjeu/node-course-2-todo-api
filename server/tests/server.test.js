@@ -10,7 +10,9 @@ const todos = [{
   text: 'First test todo'
 }, {
   _id: new ObjectID(),
-  text: 'Second test todo'
+  text: 'Second test todo',
+  completed: true,
+  completedAt: 333
 }]
 
 beforeEach((done) => {
@@ -25,7 +27,7 @@ describe('POST /todos', () => {
 
     request(app)
       .post('/todos')
-      .send({text})
+      .send({ text })
       .expect(200)
       .expect((res) => {
         expect(res.body.text).toBe(text);
@@ -71,7 +73,7 @@ describe('GET /todos', () => {
       .expect((res) => {
         expect(res.body.todos.length).toBe(2);
       })
-      .end(done)
+      .end(done);
   })
 })
 
@@ -136,9 +138,59 @@ describe('DELETE /todos/:id', () => {
       .end(done);
   });
 
-  it('should return 404 if object id is invalid', (done) => {
+  it('should return 400 if object id is invalid', (done) => {
     request(app)
       .delete('/todos/123avc')
+      .expect(400)
+      .end(done);
+  });
+})
+
+describe('PATCH /todos/:id', () => {
+  it('should update todo', (done) => {
+    let hexId = todos[0]._id.toHexString();
+    let text = "this is the revised version";
+
+    request(app)
+      .patch(`/todos/${ hexId }`)
+      .send({ text, completed: true })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo.text).toBe('this is the revised version');
+        expect(res.body.todo.completed).toBe(true);
+        expect(res.body.todo.completedAt).toBeA('number');
+      })
+      .end(done);
+  });
+
+  it('should clear completedAt when todo is not completed', (done) => {
+    let hexId = todos[1]._id.toHexString();
+    let text = "i am editing the second todo";
+
+    request(app)
+      .patch(`/todos/${ hexId }`)
+      .send({ text, completed: false })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo.text).toBe('i am editing the second todo');
+        expect(res.body.todo.completed).toBe(false);
+        expect(res.body.todo.completedAt).toNotExist();
+      })
+      .end(done);
+  });
+
+  it('should return 404 if todo is not found', (done) => {
+    let hexId = new ObjectID().toHexString();
+
+    request(app)
+      .patch(`/todos/${ hexId }`)
+      .expect(404)
+      .end(done);
+  });
+
+  it('should return 400 if object id is invalid', (done) => {
+    request(app)
+      .patch('/todos/234hgure')
       .expect(400)
       .end(done);
   });
