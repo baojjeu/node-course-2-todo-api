@@ -4,6 +4,7 @@ const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { ObjectID } = require('mongodb');
+const { authenticate } = require('./middleware/authenticate');
 
 // fetch ./db/mongoose.js's local variable by destructing
 var { mongoose } = require('./db/mongoose');
@@ -126,8 +127,13 @@ app.post('/users', (req, res) => {
       res.header('x-auth', token).send(user.toJSON());
     })
     .catch(e => {
+      console.log(e);
       res.status(400).send(e);
     });
+});
+
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user);
 });
 
 app.listen(port, () => {
