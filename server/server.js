@@ -20,7 +20,7 @@ const port = process.env.PORT;
 // middleware of express
 app.use(bodyParser.json());
 
-// Create
+// POST /todos
 app.post('/todos', (req, res) => {
   var todo = new Todo({
     text: req.body.text,
@@ -110,6 +110,25 @@ app.patch('/todos/:id', (req, res) => {
     res.status(400).send(e);
   });
 })
+
+// POST /users
+app.post('/users', (req, res) => {
+  const body = _.pick(req.body, ['email', 'password']);
+  const user = new User(body);
+
+  user
+    .save()
+    .then(() => {
+      return user.generateAuthToken();
+    })
+    .then(token => {
+      // custom header with x prefix
+      res.header('x-auth', token).send(user.toJSON());
+    })
+    .catch(e => {
+      res.status(400).send(e);
+    });
+});
 
 app.listen(port, () => {
   console.log(`Started on port ${port}`);
