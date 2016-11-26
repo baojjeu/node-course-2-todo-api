@@ -3,19 +3,14 @@ require('./config/config');
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
+
 const { ObjectID } = require('mongodb');
 const { authenticate } = require('./middleware/authenticate');
+const { mongoose } = require('./db/mongoose');
+const { Todo } = require('./models/todo');
+const { User } = require('./models/user');
 
-// fetch ./db/mongoose.js's local variable by destructing
-var { mongoose } = require('./db/mongoose');
-
-// fetch Todo variable
-var { Todo } = require('./models/todo');
-
-// fetch User veriable
-var { User } = require('./models/user');
-
-var app = express();
+const app = express();
 const port = process.env.PORT;
 
 // middleware of express
@@ -23,7 +18,7 @@ app.use(bodyParser.json());
 
 // POST /todos
 app.post('/todos', (req, res) => {
-  var todo = new Todo({
+  let todo = new Todo({
     text: req.body.text,
     completed: req.body.completed
   });
@@ -48,7 +43,7 @@ app.get('/todos', (req, res) => {
 // GET /todos/:id
 app.get('/todos/:id', (req, res) => {
   // console.log(req.params);
-  var id = req.params.id;
+  let id = req.params.id;
 
   if (!ObjectID.isValid(id)) {
     return res.status(400).send();
@@ -67,7 +62,7 @@ app.get('/todos/:id', (req, res) => {
 });
 
 app.delete('/todos/:id', (req, res) => {
-  var id = req.params.id;
+  let id = req.params.id;
 
   if (!ObjectID.isValid(id)) {
     res.status(400).send();
@@ -85,8 +80,8 @@ app.delete('/todos/:id', (req, res) => {
 });
 
 app.patch('/todos/:id', (req, res) => {
-  var id = req.params.id;
-  var body = _.pick(req.body, ['text', 'completed']);
+  let id = req.params.id;
+  let body = _.pick(req.body, ['text', 'completed']);
 
   if (!ObjectID.isValid(id)) {
     return res.status(400).send();
@@ -127,7 +122,7 @@ app.post('/users', (req, res) => {
       res.header('x-auth', token).send(user.toJSON());
     })
     .catch(e => {
-      console.log(e);
+      // console.log(e);
       res.status(400).send(e);
     });
 });
