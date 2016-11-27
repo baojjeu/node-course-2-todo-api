@@ -33,6 +33,16 @@ const UserSchema = mongoose.Schema({
   }]
 });
 
+UserSchema.methods.removeToken = function (token) {
+  let user = this;
+
+  return user.update({
+    $pull: {
+      tokens: { token }
+    }
+  });
+}
+
 UserSchema.methods.toJSON = function () {
   let user = this;
   let userObject = user.toObject();

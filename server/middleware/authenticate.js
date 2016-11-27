@@ -4,10 +4,7 @@ const authenticate = (req, res, next) => {
   let token = req.header('x-auth');
 
   User.findByToken(token).then(user => {
-    if (!user) {
-      // res.status(401).send();
-      return Promise.reject(); // will be caught on 144
-    }
+    if (!user) return Promise.rejct();
 
     // success
     req.user = user;
