@@ -3,16 +3,18 @@ const { User } = require('./../models/user');
 const authenticate = (req, res, next) => {
   let token = req.header('x-auth');
 
-  User.findByToken(token).then(user => {
-    if (!user) return Promise.rejct();
+  User.findByToken(token)
+    .then(user => {
+      if (!user) return Promise.rejct();
 
-    // success
-    req.user = user;
-    req.token = token;
-    next();
-  }).catch(e => {
-    res.status(401).send();
-  });
+      // success
+      req.user = user;
+      req.token = token;
+      next();
+    })
+    .catch(e => {
+      res.status(401).send();
+    });
 }
 
 module.exports = { authenticate };
